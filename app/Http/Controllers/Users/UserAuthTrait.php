@@ -7,6 +7,7 @@ use App\Http\Responses\Response;
 use App\Models\System\Config;
 use App\Models\Users\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Cache;
 
 trait UserAuthTrait
 {
@@ -80,12 +81,18 @@ trait UserAuthTrait
     public function updatePassword(Request $request): JsonResponse
     {
         $request->validate([
-            'password' => $this->getPasswordRules(),
+            'password' => 'required|string',
+            'new_password' => $this->getPasswordRules(),
             'confirm_password' => 'required|same:password',
         ]);
 
+        if (bcrypt($request->input('password')) != $request->user()->password) {
+            return Response::error('Invalid password', 401);
+        }
+
         $user = $request->user();
-        $user->password = bcrypt($request->input('password'));
+
+        $user->password = bcrypt($request->input('new_password'));
         $user->save();
         $request->user()->tokens()->delete();
 

@@ -14,6 +14,7 @@ Route::prefix('api')->middleware(['throttle:60,1'])->group(function () {
             Route::post('permissions', [UserController::class, 'permissions']);
             Route::post('roles', [UserController::class, 'roles']);
             Route::post('update-password', [UserController::class, 'updatePassword']);
+            Route::post('update-profile', [UserController::class, 'updateProfile']);
         });
     });
 });

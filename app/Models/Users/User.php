@@ -23,6 +23,10 @@ class User extends Authenticatable
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
+    protected $fillable = [
+
+    ];
+
     public function hasPermission($permission): bool
     {
         return $this->roles()->whereHas('permissions', function ($query) use ($permission) {
