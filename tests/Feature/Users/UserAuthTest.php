@@ -60,7 +60,8 @@ class UserAuthTest extends TestCase
 
         $response = $this->withToken($token)
             ->post('api/users/update-password', [
-                'password' => $newPassword,
+                'password' => $password,
+                'new_password' => $newPassword,
                 'confirm_password' => $newPassword
             ]);
 

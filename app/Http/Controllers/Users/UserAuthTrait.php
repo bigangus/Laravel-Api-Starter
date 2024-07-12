@@ -82,18 +82,18 @@ trait UserAuthTrait
         $request->validate([
             'password' => 'required|string',
             'new_password' => $this->getPasswordRules(),
-            'confirm_password' => 'required|same:password',
+            'confirm_password' => 'required|same:new_password',
         ]);
-
-        if (bcrypt($request->input('password')) != $request->user()->password) {
-            return Response::error('Invalid password', 401);
-        }
 
         $user = $request->user();
 
+        if (bcrypt($request->input('password')) != $user->password) {
+            return Response::error('Invalid password', 401);
+        }
+
         $user->password = bcrypt($request->input('new_password'));
         $user->save();
-        $request->user()->tokens()->delete();
+        $user->tokens()->delete();
 
         return Response::success('User password updated successfully', ['user' => $user]);
     }
