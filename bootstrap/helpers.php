@@ -1,6 +1,9 @@
 <?php
 
 if (!function_exists('scan_directory')) {
+    /**
+     * @throws ReflectionException
+     */
     function scan_directory(
         $directory,
         &$controllersMethods,
@@ -22,7 +25,11 @@ if (!function_exists('scan_directory')) {
                 $className = pathinfo($path, PATHINFO_FILENAME);
                 $fullClassName = $namespace . '\\' . $className;
 
-                if (class_exists($fullClassName)) {
+                if (!class_exists($fullClassName, false)) {
+                    require_once $path;
+                }
+
+                if (class_exists($fullClassName, false)) {
                     $reflectionClass = new ReflectionClass($fullClassName);
                     $methods = $reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC);
                     $methodNames = [];
