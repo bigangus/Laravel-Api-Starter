@@ -1,9 +1,6 @@
 <?php
 
 if (!function_exists('scan_directory')) {
-    /**
-     * @throws ReflectionException
-     */
     function scan_directory(
         $directory,
         &$controllersMethods,
@@ -29,20 +26,24 @@ if (!function_exists('scan_directory')) {
                     require_once $path;
                 }
 
-                if (class_exists($fullClassName, false)) {
-                    $reflectionClass = new ReflectionClass($fullClassName);
-                    $methods = $reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC);
-                    $methodNames = [];
+                try {
+                    if (class_exists($fullClassName, false)) {
+                        $reflectionClass = new ReflectionClass($fullClassName);
+                        $methods = $reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC);
+                        $methodNames = [];
 
-                    foreach ($methods as $method) {
-                        if ($method->class == $fullClassName && !in_array($method->name, $excludeMethods)) {
-                            $methodNames[] = $method->name;
+                        foreach ($methods as $method) {
+                            if ($method->class == $fullClassName && !in_array($method->name, $excludeMethods)) {
+                                $methodNames[] = $method->name;
+                            }
                         }
-                    }
 
-                    $prefix = str_replace('\\', '/', $relativeNamespace);
-                    $prefix = Str::lower(implode('/', array_map('ucfirst', explode('/', $prefix))));
-                    $controllersMethods[$prefix] = ['className' => $fullClassName, 'methods' => $methodNames];
+                        $prefix = str_replace('\\', '/', $relativeNamespace);
+                        $prefix = Str::lower(implode('/', array_map('ucfirst', explode('/', $prefix))));
+                        $controllersMethods[$prefix] = ['className' => $fullClassName, 'methods' => $methodNames];
+                    }
+                } catch (ReflectionException $e) {
+                    error_log('ReflectionException: ' . $e->getMessage());
                 }
             }
         }
