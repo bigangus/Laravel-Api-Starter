@@ -6,15 +6,25 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Request;
 use App\Http\Responses\Response;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
 /**
  * @group User management
  *
  * APIs for managing users
  */
-class UserController extends Controller
+class UserController extends Controller implements HasMiddleware
 {
     use UserAuthTrait, UserPermissionTrait, UserRoleTrait;
+
+    public static function middleware()
+    {
+        return [
+            new Middleware('auth:sanctum', except: ['register', 'login']),
+            new Middleware('acl:user.info', only: ['info'])
+        ];
+    }
 
     public function info(Request $request): JsonResponse
     {

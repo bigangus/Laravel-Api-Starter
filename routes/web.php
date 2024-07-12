@@ -8,6 +8,10 @@ $subfolders = array_filter(scandir($directory), function ($entry) use ($director
 });
 
 $controllersMethods = [];
+$excludeMethods = [
+    '__construct',
+    'middleware'
+];
 
 foreach ($subfolders as $subfolder) {
     $subfolderPath = $directory . '/' . $subfolder;
@@ -25,7 +29,7 @@ foreach ($subfolders as $subfolder) {
             $methodNames = [];
 
             foreach ($methods as $method) {
-                if ($method->class == $fullClassName) {
+                if ($method->class == $fullClassName && !in_array($method->name, $excludeMethods)) {
                     $methodNames[] = $method->name;
                 }
             }
@@ -37,12 +41,14 @@ foreach ($subfolders as $subfolder) {
 
 Route::prefix('api')->middleware(['throttle:60,1'])->group(function () use ($controllersMethods) {
     foreach ($controllersMethods as $fullClassName => $methods) {
-        Route::prefix(Str::lower(explode('\\', $fullClassName)[3]))->group(function () use ($fullClassName, $methods) {
+        $prefix = Str::lower(explode('\\', $fullClassName)[3]);
+        Route::prefix($prefix)->group(function () use ($fullClassName, $methods, $prefix) {
             foreach ($methods as $method) {
                 Route::post(
                     Str::replace('_', '-', Str::snake($method)),
                     "$fullClassName@$method"
-                );
+                )
+                    ->name($prefix . '.' . $method);
             }
         });
     }

@@ -7,6 +7,7 @@ use App\Http\Responses\Response;
 use App\Models\System\Config;
 use App\Models\Users\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Hash;
 
 trait UserAuthTrait
 {
@@ -87,7 +88,7 @@ trait UserAuthTrait
 
         $user = $request->user();
 
-        if (bcrypt($request->input('password')) != $user->password) {
+        if (!Hash::check($request->input('password'), $user->password)) {
             return Response::error('Invalid password', 401);
         }
 
