@@ -27,14 +27,19 @@ class UserController extends Controller
     {
         $user = $request->user();
         $inputs = $request->all();
+        $updates = [];
 
         foreach ($inputs as $key => $value) {
             if ($key !== 'password' && in_array($key, $user->getFillable())) {
-                $user->$key = $value;
+                $updates[$key] = $value;
             }
         }
 
-        $user->save();
+        if (empty($updates)) {
+            return Response::error('No valid data found to update', 422);
+        }
+
+        $user->update($updates);
 
         return Response::success('User profile updated successfully', ['user' => $user]);
     }
