@@ -7,7 +7,6 @@ use App\Http\Responses\Response;
 use App\Models\System\Config;
 use App\Models\Users\User;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Cache;
 
 trait UserAuthTrait
 {
