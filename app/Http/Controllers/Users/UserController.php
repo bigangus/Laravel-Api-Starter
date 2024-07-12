@@ -20,10 +20,17 @@ class UserController extends Controller implements HasMiddleware
 
     public static function middleware()
     {
-        return [
-            new Middleware('auth:sanctum', except: ['register', 'login']),
-            new Middleware('acl:user.info', only: ['info'])
+        $aclRoutes = ['info'];
+
+        $middlewares = [
+            new Middleware('auth:sanctum', except: ['register', 'login'])
         ];
+
+        foreach ($aclRoutes as $route) {
+            $middlewares[] = new Middleware('acl:user.' . $route, only: [$route]);
+        }
+
+        return $middlewares;
     }
 
     public function info(Request $request): JsonResponse
