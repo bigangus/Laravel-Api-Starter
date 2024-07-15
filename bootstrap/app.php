@@ -35,11 +35,7 @@ return Application::configure(basePath: dirname(__DIR__))
             return Response::error($e->getMessage(), 422, $e->validator->errors());
         });
 
-        $exceptions->render(function (RouteNotFoundException $e) {
-            return Response::error($e->getMessage(), 404);
-        });
-
-        $exceptions->render(function (NotFoundHttpException $e) {
+        $exceptions->render(function (RouteNotFoundException|NotFoundHttpException $e) {
             return Response::error($e->getMessage(), 404);
         });
 
