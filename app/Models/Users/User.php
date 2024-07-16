@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Collection;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -39,8 +40,8 @@ class User extends Authenticatable
         return $this->belongsToMany(Role::class);
     }
 
-    public function permissions(): BelongsToMany
+    public function permissions(): Collection
     {
-        return $this->belongsToMany(Permission::class, 'role_user', 'user_id', 'role_id');
+        return $this->roles()->with('permissions')->get()->flatMap(fn($role) => $role->permissions);
     }
 }

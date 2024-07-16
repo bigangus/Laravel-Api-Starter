@@ -22,10 +22,12 @@ class UserController extends Controller implements HasMiddleware
 
     public static function middleware()
     {
-        $aclRoutes = ['info'];
+        $methods = get_class_methods(self::class);
+
+        $aclRoutes = array_values(array_diff($methods, ['__construct', 'middleware', 'login']));
 
         $middlewares = [
-            new Middleware('auth:sanctum', except: ['register', 'login'])
+            new Middleware('auth:sanctum', except: ['login'])
         ];
 
         foreach ($aclRoutes as $route) {
