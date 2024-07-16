@@ -12,32 +12,6 @@ use Illuminate\Support\Facades\Hash;
 trait UserAuthTrait
 {
 
-    public function register(Request $request): JsonResponse
-    {
-        $request->validate([
-            'username' => 'required|string',
-            'password' => $this->getPasswordRules(),
-            'confirm_password' => 'required|same:password',
-        ]);
-
-        if (User::where('username', $request->input('username'))->exists()) {
-            return Response::error('Username already exists', 409);
-        }
-
-        $user = User::create([
-            'username' => $request->input('username'),
-            'password' => bcrypt($request->input('password')),
-        ]);
-
-        return Response::success('User registered successfully', ['user' => $user]);
-    }
-
-    private function getPasswordRules(): string
-    {
-        $passwordPattern = Config::cache('password_pattern');
-        return 'required|string|min:6' . ($passwordPattern ? '|regex:' . $passwordPattern : '');
-    }
-
     public function login(Request $request): JsonResponse
     {
         $credentials = $request->validate([
@@ -82,7 +56,7 @@ trait UserAuthTrait
     {
         $request->validate([
             'password' => 'required|string',
-            'new_password' => $this->getPasswordRules(),
+            'new_password' => get_password_rules(),
             'confirm_password' => 'required|same:new_password',
         ]);
 

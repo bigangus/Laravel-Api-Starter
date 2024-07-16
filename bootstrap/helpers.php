@@ -49,3 +49,11 @@ if (!function_exists('scan_directory')) {
         }
     }
 }
+
+if (!function_exists('get_password_rules')) {
+    function get_password_rules(): string
+    {
+        $passwordPattern = \App\Models\System\Config::cache('password_pattern');
+        return 'required|string|min:6' . ($passwordPattern ? '|regex:' . $passwordPattern : '');
+    }
+}
