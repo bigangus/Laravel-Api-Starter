@@ -32,7 +32,7 @@ trait UserAuthTrait
         }
 
         $token = $user->createToken(
-            $user->username . now()->timestamp,
+            $user->username . '_' . now()->timestamp,
             $user->permissions()->pluck('name')->toArray(),
             now()->addDays($expiresIn)
         )
