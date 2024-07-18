@@ -8,7 +8,6 @@ use App\Http\Responses\Response;
 use App\Models\Users\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Hash;
 
 /**
@@ -22,19 +21,7 @@ class UserController extends Controller implements HasMiddleware
 
     public static function middleware()
     {
-        $methods = get_class_methods(self::class);
-
-        $aclRoutes = array_values(array_diff($methods, ['__construct', 'middleware', 'login']));
-
-        $middlewares = [
-            new Middleware('auth:sanctum', except: ['login'])
-        ];
-
-        foreach ($aclRoutes as $route) {
-            $middlewares[] = new Middleware('acl:user.' . $route, only: [$route]);
-        }
-
-        return $middlewares;
+        return (new static)->getMiddleware('user', ['login'], ['login']);
     }
 
     public function index(): JsonResponse

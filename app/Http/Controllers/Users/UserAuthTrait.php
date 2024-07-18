@@ -10,7 +10,6 @@ use Illuminate\Http\JsonResponse;
 
 trait UserAuthTrait
 {
-
     public function login(Request $request): JsonResponse
     {
         $credentials = $request->validate([
