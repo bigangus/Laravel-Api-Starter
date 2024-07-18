@@ -2,8 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\System\Dictionary;
 use App\Models\Users\Permission;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Route;
 
 class PermissionTableSeeder extends Seeder
@@ -22,5 +24,27 @@ class PermissionTableSeeder extends Seeder
                 }
             }
         });
+
+        $permissions = Permission::all()->toArray();
+
+        foreach ($permissions as &$permission) {
+            $permission['translation'] = Arr::join(
+                Arr::map(
+                    explode('.', $permission['name']),
+                    fn($value) => ucfirst($value)
+                ),
+                ' '
+            );
+        }
+
+        Dictionary::updateOrCreate(
+            [
+                'key' => 'permissions'
+            ],
+            [
+                'name' => 'Permission List',
+                'value' => collect($permissions)->toJson()
+            ]
+        );
     }
 }
