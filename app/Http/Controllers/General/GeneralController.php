@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\General;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Request;
 use App\Http\Responses\Response;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -19,8 +20,10 @@ class GeneralController extends Controller implements HasMiddleware
     /**
      * @throws Exception
      */
-    public function captcha(Captcha $captcha, string $config = 'default'): JsonResponse
+    public function captcha(Captcha $captcha, Request $request): JsonResponse
     {
+        $config = $request->input('config', 'default');
+        
         return Response::success('Captcha retrieved successfully', [
             'captcha' => $captcha->create($config, true)
         ]);
