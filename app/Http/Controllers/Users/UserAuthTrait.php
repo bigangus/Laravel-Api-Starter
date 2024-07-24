@@ -15,6 +15,7 @@ trait UserAuthTrait
         $credentials = $request->validate([
             'username' => 'required|string',
             'password' => 'required|string',
+            'captcha' => 'required|captcha'
         ]);
 
         /** @var User $user */
