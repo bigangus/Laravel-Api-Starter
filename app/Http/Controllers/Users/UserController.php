@@ -21,7 +21,7 @@ class UserController extends Controller implements HasMiddleware
 
     public static function middleware()
     {
-        return (new static)->getMiddleware('user', ['login'], ['login']);
+        return (new static)->getMiddleware(aclName: 'user', authExceptRoutes: ['login'], aclExceptRoutes: ['login']);
     }
 
     public function index(): JsonResponse
